@@ -82,6 +82,10 @@ input, select {
 	vertical-align:middle;
 }
 
+*[v-cloak=""]{
+	display:none;
+}
+
 /** ====EXPLORER==== */
 body{
 	color: #c8c8c8;
@@ -195,6 +199,13 @@ a:hover{
 	border-top-right-radius: 3px;
 	border-top-left-radius: 3px;
 	font-size: 30px;
+}
+.panel > .subtitle{
+	padding: 0 15px 10px 20px;
+	border-bottom: 1px solid transparent;
+	border-top-right-radius: 3px;
+	border-top-left-radius: 3px;
+	font-size: 16px;
 }
 
 .searchBox{

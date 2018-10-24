@@ -185,6 +185,8 @@ class IndexView extends Vue{
 				this.showProveReceived = false;
 				if(decoded.length === 0)
 					alert('Nothing match');
+				else
+					window.location.href = '#outputs';
 			}catch(e){
 				alert('Invalid keys');
 			}
@@ -200,6 +202,8 @@ class IndexView extends Vue{
 				this.showProveReceived = false;
 				if(decoded.length === 0)
 					alert('Nothing match');
+				else
+					window.location.href = '#outputs';
 			}catch(e){
 				alert('Invalid keys');
 			}

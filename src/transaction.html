@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<div id="app">
+<div id="app" v-cloak="">
 	<div class="header panel">
 		<div class="logo">
 			<a href="index.html">
@@ -74,7 +74,7 @@
 				</div>
 			</div>
 
-			<div class="panel">
+			<div class="panel" id="inputs">
 				<div class="title"><i class="fa fa-long-arrow-left fa-fw" aria-hidden="true"></i>Inputs ({{vinLength}})</div>
 				<div class="content padding10">
 					<table>
@@ -99,7 +99,7 @@
 				</div>
 			</div>
 
-			<div class="panel">
+			<div class="panel" id="outputs">
 				<div class="title"><i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i>Outputs
 					<span v-if="decodedOuts.length == 0" >({{transaction.as_json.vout.length}})</span>
 					<span v-if="decodedOuts.length != 0" >({{decodedOuts.length}})</span>
@@ -148,6 +148,7 @@
 
 			<div class="panel" >
 				<div class="title" >Prove sending</div>
+				<div class="subtitle" >"Transaction private key" can be obtained using the "get_tx_key" command in masari-wallet-cli command line tool or in the transaction details on the webwallet</div>
 				<div class="content padding10" >
 					<div class="field" >
 						<label>Recipient's address/subaddress</label>
@@ -177,7 +178,7 @@
 				<ul>
 					<li>Status: <span v-if="!networkInfo.offline" >Online</span><span v-else="" >Offline</span></li>
 					<li v-if="networkInfo.version">Version: {{networkInfo.version}}</li>
-					<li>Height: {{networkInfo.height}}</li>
+					<li>Blocks count: {{networkInfo.height}}</li>
 					<li>Difficulty: {{networkInfo.difficulty}}</li>
 					<li>RPC connections: {{networkInfo.rpc_connections_count}}</li>
 					<li>Incoming P2P connections: {{networkInfo.incoming_connections_count}}</li>

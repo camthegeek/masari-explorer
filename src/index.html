@@ -8,7 +8,7 @@
 	<link href="css/font-awesome.min.css" rel="stylesheet"/>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak="">
 	<div class="header panel">
 		<div class="pageContainer">
 			<div class="logo">
@@ -45,7 +45,7 @@
 					<div class="column group">
 						<div class="item">Last block time: <span class="value">{{networkStats.timestamp | date}}</span></div>
 						<div class="item">Last block reward: <span class="value">{{networkStats.reward | piconero}} MSR</span></div>
-						<div class="item">Avg Solve Time (Target): <span class="value">{{avgSolveTime}}({{networkInfo.target}})s</span></div>
+						<div class="item">Avg Solve Time (Target): <span class="value">{{avgSolveTime}} ({{networkInfo.target}})s</span></div>
 					</div>
 				</div>
 			</div>
@@ -127,7 +127,7 @@
 				<ul>
 					<li>Status: <span v-if="!networkInfo.offline">Online</span><span v-else="">Offline</span></li>
 					<li v-if="networkInfo.version">Version: {{networkInfo.version}}</li>
-					<li>Height: {{networkInfo.height}}</li>
+					<li>Blocks count: {{networkInfo.height}}</li>
 					<li>Difficulty: {{networkInfo.difficulty}}</li>
 					<li>RPC connections: {{networkInfo.rpc_connections_count}}</li>
 					<li>Incoming P2P connections: {{networkInfo.incoming_connections_count}}</li>
