@@ -106,6 +106,9 @@ class IndexView extends Vue{
 
 	loadMempool(){
 		this.daemon.getTransactionPool().then((txs : MempoolTransaction[]) => {
+			txs.sort((a : MempoolTransaction, b : MempoolTransaction) => {
+				return b.receive_time-a.receive_time;
+			});
 			this.txsInMempool = txs;
 		});
 	}
