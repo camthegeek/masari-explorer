@@ -69,16 +69,15 @@ class IndexView extends Vue{
 			this.refresh();
 		}, 20*1000);
 		this.refresh();
-
-		this.loadNetworkStats().then(()=>{
-			this.loadLastBlocks(20);
-			this.loadingBlocks = false;
-		});
 	}
 
 	refresh(){
 		this.loadServerTime();
-		this.loadNetworkStats();
+		this.loadNetworkStats().then(()=>{
+			if(this.blockHeaders.length <= 20)
+				this.loadLastBlocks(20);
+			this.loadingBlocks = false;
+		});
 		this.loadMempool();
 	}
 
