@@ -55,7 +55,7 @@
 
 		<div class="panel">
 			<div class="title"><i class="fa fa-exchange fa-fw" aria-hidden="true"></i> Transaction pool</div>
-			<div class="content padding10 tableOverflow">
+			<div class="content padding10" :class="(txsInMempool.length === 0 ? '' : 'tableOverflow')">
 				<table>
 					<thead>
 					<tr>
