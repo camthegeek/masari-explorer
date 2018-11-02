@@ -28,8 +28,7 @@
 			<div class="panel">
 				<div class="title"><i class="fa fa-cube fa-fw" aria-hidden="true"></i> Block</div>
 				<div class="content padding10">
-
-					<div class="">Hash: <span class="value2">{{block.block_header.hash}}</span></div>
+					<div class="">Hash: <span class="value2"><a :href="'block.html?hash='+block.block_header.hash">{{block.block_header.hash}}</a></span></div>
 					<div class="">Height: <span class="value2">{{block.block_header.height}}</span></div>
 					<div class="">Date: <span class="value2">{{block.block_header.timestamp | date}}</span></div>
 					<div class="">Difficulty: <span class="value2">{{block.block_header.difficulty}}</span></div>
@@ -39,6 +38,8 @@
 					<div class="">Major version: <span class="value2">{{block.block_header.major_version}}</span></div>
 					<div class="">Minor version: <span class="value2">{{block.block_header.minor_version}}</span></div>
 					<div class="">Nonce: <span class="value2">{{block.block_header.nonce}}</span></div>
+					<div class="" v-if="block.block_header.weight">Weight: <span class="value2">{{block.block_header.weight}}</span></div>
+					<div class="" v-if="block.json.uncle">Uncle hash: <span class="value2"><a :href="'block.html?hash='+block.json.uncle">{{block.json.uncle}}</a></span></div>
 					<div class="">Orphaned:
 						<span class="value2" v-if="block.block_header.orphan_status">Yes</span>
 						<span class="value2" v-else="">No</span>

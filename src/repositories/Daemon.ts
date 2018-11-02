@@ -21,6 +21,7 @@ export type BlockHeader = {
 	prev_hash:boolean,
 	reward:boolean,
 	timestamp:number,
+	weight?:number,
 }
 
 export type Block = {
@@ -34,7 +35,8 @@ export type Block = {
 		nonce: number,
 		prev_id: string,
 		timestamp: number,
-		tx_hashes: string[]
+		tx_hashes: string[],
+		uncle?:string
 	}
 }
 
