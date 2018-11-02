@@ -39,7 +39,7 @@
 					<div class="">Minor version: <span class="value2">{{block.block_header.minor_version}}</span></div>
 					<div class="">Nonce: <span class="value2">{{block.block_header.nonce}}</span></div>
 					<div class="" v-if="block.block_header.weight">Weight: <span class="value2">{{block.block_header.weight}}</span></div>
-					<div class="" v-if="block.json.uncle">Uncle hash: <span class="value2"><a :href="'block.html?hash='+block.json.uncle">{{block.json.uncle}}</a></span></div>
+					<div class="" v-if="block.json.uncle && block.json.uncle !== '0000000000000000000000000000000000000000000000000000000000000000'">Uncle hash: <span class="value2"><a :href="'block.html?hash='+block.json.uncle">{{block.json.uncle}}</a></span></div>
 					<div class="">Orphaned:
 						<span class="value2" v-if="block.block_header.orphan_status">Yes</span>
 						<span class="value2" v-else="">No</span>
