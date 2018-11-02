@@ -1,4 +1,4 @@
-import {Block, BlockHeader, Daemon, DaemonInfo, NetworkStats} from "./repositories/Daemon";
+import {Block, BlockHeader, Daemon, DaemonInfo, NetworkStats, Transaction, UncleBlock} from "./repositories/Daemon";
 import Utils from "./lib/horizon/Utils";
 import {VueFilterBytes, VueFilterDate, VueFilterDifficulty, VueFilterPiconero} from "./filters/Filters";
 import {SearchComponent} from "./controllers/Search";
@@ -14,6 +14,8 @@ class IndexView extends Vue{
 	protected daemon : Daemon;
 
 	@VueVar(null) block !: Block|null;
+	@VueVar(null) uncle !: UncleBlock|null;
+	@VueVar(null) uncleReward !: number|null;
 
 	@VueVar({
 		alt_blocks_count: 0,
@@ -71,11 +73,39 @@ class IndexView extends Vue{
 
 	loadBlockWithHash(hash : string){
 		this.daemon.getBlockWithHash(hash).then((block : Block) => {
-			this.block = block;
-			console.log(block);
+			if(block.block_header.orphan_status)//possible uncle
+				this.loadUncle(hash).catch(()=>{
+					this.block = block;
+				});
+			else
+				this.block = block;
+		}).catch(()=>{
+			//the block can be an uncle
+			this.loadUncle(hash);
 		});
 	}
 
+	loadUncle(hash : string){
+		return this.daemon.getUncleBlockWithHash(hash).then((uncle : UncleBlock)=>{
+			//load the block referencing the uncle
+			console.log('Uncle found:', uncle);
+			this.daemon.getBlockWithHeight(uncle.json.miner_tx.vin[0].gen.height+1).then((block : Block)=>{
+				this.uncle = uncle;
+				this.block = block;
+
+				this.daemon.getTransactionWithHash(block.miner_tx_hash).then((tx : Transaction) => {
+					if(tx.as_json.vout.length >= 2){
+						this.uncleReward = tx.as_json.vout[0].amount;
+						for(let i = 1; i < tx.as_json.vout.length; ++i){
+							if(tx.as_json.vout[i].amount < this.uncleReward){
+								this.uncleReward = tx.as_json.vout[i].amount;
+							}
+						}
+					}
+				});
+			});
+		});
+	}
 
 
 

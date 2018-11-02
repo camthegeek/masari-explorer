@@ -40,6 +40,21 @@ export type Block = {
 	}
 }
 
+export type UncleBlock = {
+	hash:string,
+	blob:string,
+	json:{
+		major_version: number,
+		miner_tx: {version: number, unlock_time: number, vin: any[], vout: any[], extra: number[], height:number},
+		minor_version: number,
+		nonce: number,
+		prev_id: string,
+		timestamp: number,
+		tx_hashes: string[],
+		uncle?:string
+	}
+}
+
 export type DaemonInfo = {
 	alt_blocks_count: number,
 	block_size_limit: number,
@@ -240,6 +255,26 @@ export class Daemon{
 		});
 	}
 
+	public getUncleBlockWithHash(hash : string) : Promise<UncleBlock>{
+		return new Promise<UncleBlock>((resolve, reject) => {
+			$.ajax({
+				url:this.apiUrl+'get_uncle_block.php?hash='+hash
+			}).done(function(data:any){
+				if(data === null)reject();
+				else {
+					let block: UncleBlock = {
+						hash:hash,
+						blob: data.blob,
+						json: JSON.parse(data.json)
+					};
+					resolve(block);
+				}
+			}).catch(function(e : any){
+				reject(e);
+			});
+		});
+	}
+
 	public getTransactionWithHash(hash : string) : Promise<Transaction>{
 		return new Promise<Transaction>((resolve, reject) => {
 			$.ajax({
@@ -306,8 +341,13 @@ export class Daemon{
 						let result : SearchResultType = 'transactionHash';
 						return result;
 					}).catch(() => {
-						let result : SearchResultType = null;
-						return result;
+						return this.getUncleBlockWithHash(value).then((uncle : UncleBlock) => {
+							let result : SearchResultType = 'blockHash';
+							return result;
+						}).catch(() => {
+							let result : SearchResultType = null;
+							return result;
+						});
 					});
 				});
 			}else {
