@@ -78,7 +78,7 @@
 						</thead>
 						<tbody>
 						<tr>
-							<td><a :href="'transaction.html?hash='+block.miner_tx_hash">{{block.miner_tx_hash}} (coinbase)</a></td>
+							<td><a :href="'transaction.html?hash='+block.miner_tx_hash">{{block.miner_tx_hash}} (miner reward)</a></td>
 						</tr>
 						<tr v-for="hash in block.json.tx_hashes">
 							<td><a :href="'transaction.html?hash='+hash">{{hash}}</a></td>
