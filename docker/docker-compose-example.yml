@@ -1,0 +1,33 @@
+version: '3.5'
+
+networks:
+  net:
+    driver: overlay
+    driver_opts:
+      encrypted: ''
+    attachable: true
+
+services:
+  webserver:
+    image: registry.gitlab.com/gnock/masari-explorer/webserver
+    networks:
+      - net
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+  php:
+    image: registry.gitlab.com/gnock/masari-explorer/php
+    networks:
+      - net
+    environment:
+      - cache_location=/cache
+      - daemon_address=
+      - daemon_rpc_port=
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s

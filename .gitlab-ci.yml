@@ -1,0 +1,36 @@
+image: docker:stable
+
+variables:
+  DOCKER_DRIVER: overlay
+  DOCKER_CHANNEL: stable
+  DOCKER_VERSION: 17.06.1-ce
+  
+services:
+  - docker:dind
+
+before_script:
+  - apk --update add ca-certificates wget openssl openssh-client curl git grep gmp-dev libmcrypt-dev freetype-dev libxpm-dev libwebp-dev libjpeg-turbo-dev libjpeg bzip2-dev krb5-dev libxml2-dev build-base tar make autoconf re2c bison curl-dev
+  - update-ca-certificates
+
+  - apk add --update nodejs nodejs-npm
+  - npm config set unsafe-perm true
+  - npm install
+
+
+build:
+    only:
+    - master
+    script:
+       - npx tsc --project tsconfig.prod.json
+       - find . -type f -name '*.ts' -exec rm {} +
+
+       - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+
+       - docker build -t registry.gitlab.com/masari-project/masari-explorer/php -f docker/Webserver-php.dockerfile .
+       - docker push registry.gitlab.com/masari-project/masari-explorer/php
+
+       - docker build -t registry.gitlab.com/masari-project/masari-explorer/webserver -f docker/Webserver.dockerfile .
+       - docker push registry.gitlab.com/masari-project/masari-explorer/webserver
+    artifacts:
+      paths:
+      - src/

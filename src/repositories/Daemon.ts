@@ -51,7 +51,8 @@ export type UncleBlock = {
 		prev_id: string,
 		timestamp: number,
 		tx_hashes: string[],
-		uncle?:string
+		uncle?:string,
+		reward?:number,
 	}
 }
 
