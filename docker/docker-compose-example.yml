@@ -9,7 +9,7 @@ networks:
 
 services:
   webserver:
-    image: registry.gitlab.com/gnock/masari-explorer/webserver
+    image: registry.gitlab.com/masari-project/masari-explorer/webserver
     networks:
       - net
     deploy:
@@ -19,11 +19,10 @@ services:
         delay: 10s
 
   php:
-    image: registry.gitlab.com/gnock/masari-explorer/php
+    image: registry.gitlab.com/masari-project/masari-explorer/php
     networks:
       - net
     environment:
-      - cache_location=/cache
       - daemon_address=
       - daemon_rpc_port=
     deploy:
