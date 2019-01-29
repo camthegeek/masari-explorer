@@ -21,6 +21,7 @@ export type BlockHeader = {
 	prev_hash:boolean,
 	reward:boolean,
 	timestamp:number,
+	uncle_status?:boolean,
 	weight?:number,
 }
 

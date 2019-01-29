@@ -73,7 +73,7 @@ class IndexView extends Vue{
 
 	loadBlockWithHash(hash : string){
 		this.daemon.getBlockWithHash(hash).then((block : Block) => {
-			if(block.block_header.orphan_status)//possible uncle
+			if(block.block_header.orphan_status || block.block_header.uncle_status === true)//possible uncle
 				this.loadUncle(hash).catch(()=>{
 					this.block = block;
 				});
