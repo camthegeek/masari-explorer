@@ -79,6 +79,14 @@
 				</table>
 			</div>
 		</div>
+
+		<div class="panel">
+			<div class="title"><i class="fa fa-area-chart" aria-hidden="true"></i> Network hashrate</div>
+			<div class="content padding10" :class="(txsInMempool.length === 0 ? '' : 'tableOverflow')">
+				<canvas id="hashrateChart" height="300"></canvas>
+			</div>
+		</div>
+
 		<div class="panel">
 			<div class="title"><i class="fa fa-chain fa-fw" aria-hidden="true"></i> Recent blocks ({{blockHeaders.length}})</div>
 			<div class="content padding10">
@@ -142,8 +150,10 @@
 	</div>
 </div>
 
+<script src="lib/chartjs/chart.bundle.min.js"></script>
 <script src="lib/vuejs/vue.js"></script>
 <script src="lib/jquery/jquery-3.3.1.min.js"></script>
+<script src="config.js"></script>
 <script src="lib/requirejs/require.js" data-main="index.js"></script>
 
 </body>

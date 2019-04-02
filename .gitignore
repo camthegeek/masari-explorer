@@ -8,3 +8,4 @@ src/**/*.js.map
 !src/lib/requirejs/*.js
 !src/lib/vuejs/*.js
 !src/lib/cn/*.js
+!src/lib/chartjs/*.js

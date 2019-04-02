@@ -2,7 +2,7 @@ import {Block, BlockHeader, Daemon, DaemonInfo, MempoolTransaction, NetworkStats
 import {VueFilterBytes, VueFilterDate, VueFilterDifficulty, VueFilterHashrate, VueFilterPiconero} from "./filters/Filters";
 import {Autowire} from "./lib/horizon/DependencyInjector";
 import {SearchComponent} from "./controllers/Search";
-import {VueClass, VueComputed, VueRequireComponent, VueRequireFilter, VueVar} from "./lib/horizon/VueAnnotate";
+import {VueClass, VueComputed, VueRequireComponent, VueRequireFilter, VueVar, VueWatched} from "./lib/horizon/VueAnnotate";
 
 @VueClass()
 @VueRequireFilter('piconero', VueFilterPiconero)
@@ -171,6 +171,122 @@ class IndexView extends Vue{
 	@VueComputed()
 	getCurrentHashrate(){
 		return this.networkStats.difficulty/(this.networkInfo.target ? this.networkInfo.target : 1);
+	}
+
+
+	hashrateChart : any = null;
+
+	@VueWatched()
+	blockHeadersWatch(){
+		let element : HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('hashrateChart');
+		let ctx = element ? element.getContext('2d') : null;
+		if(ctx) {
+			if(this.hashrateChart === null) {
+				let hashrateValues = [];
+				for(let blockHeader of this.blockHeaders){
+					hashrateValues.push({
+						x:blockHeader.height,
+						y:Math.round(blockHeader.difficulty/(<any>window).config.avgBlockTime/1000)
+					});
+				}
+
+				console.log(hashrateValues);
+				(<any>window).Chart.defaults.global.defaultColor = '#2780E3';
+				this.hashrateChart = new (<any>window).Chart(ctx, {
+					type: 'line',
+					data: {
+						datasets: [{
+							label: 'Hashrate',
+							data: hashrateValues,
+							borderColor: '#2780E3',
+							borderWidth: 1
+						}],
+						labels: [],
+
+					},
+					options: {
+						maintainAspectRatio: false,
+						responsive: true,
+						elements: {
+							line: {
+								tension: 0
+							}
+						},
+						title: {
+							display: false
+						},
+						legend: {
+							display: false
+						},
+						tooltips: {
+							callbacks: {
+								label: (item : any) => `Hashrate: ${item.yLabel} KH`,
+							},
+						},
+						scales: {
+							yAxes: [{
+								type: 'linear',
+								distribution: 'linear',
+								position: 'left',
+								scaleLabel: {
+									display: true,
+									fontColor:'#c8c8c8',
+									fontSize:13,
+									labelString: 'NetHash (Kh/s)'
+								},
+								gridLines: {
+									lineWidth: 1,
+									display: true
+								},
+								ticks: {
+									fontSize: 9,
+									fontColor:'#c8c8c8',
+									display: true
+								},
+								display: true,
+							}],
+							xAxes: [{
+								type: 'linear',
+								distribution: 'linear',
+								position: 'left',
+								scaleLabel: {
+									display: false,
+									labelString: 'Height'
+								},
+								gridLines: {
+									display: false
+								},
+								ticks: {
+									fontSize: 9,
+									display: false,
+									stepSize: 1
+								},
+								display: true
+							}]
+						}
+					},
+
+				});
+				(<any>window).mychart = this.hashrateChart;
+				// alert('ok');
+			}else{
+				for(let iBlockHeader = 0; iBlockHeader < this.blockHeaders.length; ++iBlockHeader){
+					let blockHeader = this.blockHeaders[iBlockHeader];
+					let point = {
+						x: blockHeader.height,
+						y: Math.round(blockHeader.difficulty/(<any>window).config.avgBlockTime/1000)
+					};
+					console.log(iBlockHeader, this.hashrateChart.data.datasets[0].data.length);
+					if(iBlockHeader < this.hashrateChart.data.datasets[0].data.length) {
+						this.hashrateChart.data.datasets[0].data[iBlockHeader] = point;
+					}else{
+						this.hashrateChart.data.datasets[0].data.push(point);
+					}
+				}
+				console.log(this.hashrateChart.data.datasets[0].data);
+				this.hashrateChart.update();
+			}
+		}
 	}
 
 }
