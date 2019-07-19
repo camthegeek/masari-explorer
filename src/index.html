@@ -39,11 +39,11 @@
 							<div class="item">Hard fork <span class="value">v{{networkStats.major_version}}</span></div>
 							<div class="item">Server time<span class="value">{{serverTime | date}}</span></div>
 						</div>
-						<!--<div class="column group">
-						<div class="item">supply: <span class="value"></span></div>
-						<div class="item">emission: <span class="value"></span></div>
-						<div class="item">emission % : <span class="value"></span></div>
-						</div>-->
+						<div class="column group">
+							<div class="item">supply: <span class="value">{{ Number(18446744.073709551615).toLocaleString() }}</span></div>
+							<div class="item">circulating: <span class="value">{{ emissionInfo.toLocaleString() }}</span></div>
+							<div class="item">-<span class="value">-</span></div>
+						</div>
 						<div class="column group">
 							<div class="item">Last block time: <span class="value">{{networkStats.timestamp | date}}</span></div>
 							<div class="item">Last block reward: <span class="value">{{networkStats.reward | piconero}} MSR</span></div>

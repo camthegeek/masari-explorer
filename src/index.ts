@@ -1,4 +1,4 @@
-import {Block, BlockHeader, Daemon, DaemonInfo, MempoolTransaction, NetworkStats} from "./repositories/Daemon";
+import {Block, BlockHeader, Daemon, DaemonInfo, MempoolTransaction, EmissionInfo, NetworkStats} from "./repositories/Daemon";
 import {VueFilterBytes, VueFilterDate, VueFilterDifficulty, VueFilterHashrate, VueFilterPiconero} from "./filters/Filters";
 import {Autowire} from "./lib/horizon/DependencyInjector";
 import {SearchComponent} from "./controllers/Search";
@@ -59,6 +59,7 @@ class IndexView extends Vue{
 	@VueVar(0) serverTime !: number;
 	@VueVar([]) txsInMempool !: MempoolTransaction[];
 	@VueVar(true) loadingBlocks !: boolean;
+	@VueVar(0) emissionInfo !: EmissionInfo;
 
 	intervalRefresh = 0;
 
@@ -70,7 +71,7 @@ class IndexView extends Vue{
 		}, 20*1000);
 		this.refresh();
 	}
-
+	
 	refresh(){
 		this.loadServerTime();
 		this.loadNetworkStats().then(()=>{
@@ -94,6 +95,10 @@ class IndexView extends Vue{
 			}),
 			this.daemon.getInfo().then((stats : DaemonInfo)=>{
 				this.networkInfo = stats;
+			}),
+			this.daemon.getEmission().then((emission : EmissionInfo) => { 
+				console.log('this is emission: ' +emission);
+				this.emissionInfo = emission;
 			})
 		]);
 	}

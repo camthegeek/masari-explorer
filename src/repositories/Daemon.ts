@@ -148,6 +148,10 @@ export type MempoolTransaction = {
 	tx_json:TransactionJson
 }
 
+export type EmissionInfo = {
+	emission: number
+}
+
 export type SearchResultType = 'blockHeight'|'blockHash'|'transactionHash'|null;
 
 export class Daemon{
@@ -319,6 +323,18 @@ export class Daemon{
 		return new Promise<MempoolTransaction[]>((resolve, reject) => {
 			$.ajax({
 				url:this.apiUrl+'get_transaction_pool.php'
+			}).done(function(data:any){
+				resolve(data);
+			}).catch(function(e : any){
+				reject(e);
+			});
+		});
+	}
+
+	public getEmission() : Promise<EmissionInfo>{
+		return new Promise<EmissionInfo>((resolve, reject) => {
+			$.ajax({
+				url:this.apiUrl+'get_emission.php'
 			}).done(function(data:any){
 				resolve(data);
 			}).catch(function(e : any){
