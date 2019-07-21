@@ -10,167 +10,210 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 </head>
 <body>
-
-<div id="app" v-cloak="">
-	<div class="header panel">
-		<div class="logo">
-			<a href="index.html">
-				<img src="imgs/logo_white.png"/> Explorer
-			</a>
+	<div id="app" v-cloak="">
+		<div class="header panel">
+			<div class="pageContainer">
+				<div class="logo">
+					<a href="index.html">
+						<img src="imgs/logo_white.png"/> Explorer
+					</a>
+				</div>
+				<div class="search">
+					<search></search>
+				</div>
+			</div>
 		</div>
-		<div class="search">
-			<search></search>
+
+		<div class="pageContainer">
+			<div v-if="transaction !== null">
+				<div class="panel">
+					<div class="title"><i class="fa fa-exchange fa-fw" aria-hidden="true"></i> Transaction Details</div>
+					<div class="content padding10">
+						<div class="tableOverflow bigOverflow">
+
+							<table>
+								<tbody>
+									<tr v-if="transaction.in_pool">
+										<td class="">In mempool</td>
+										<td class=""><span class="value2">True</span></td>
+									</tr>
+									<tr>
+										<td class="">Hash</td>
+										<td class=""><span class="value2">{{transaction.tx_hash}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Public key</td>
+										<td class=""><span class="value2">{{txPubKey}}</span></td>
+									</tr>
+									<tr v-if="transaction.as_json.rct_signatures.fee">
+										<td class="">Fee</td>
+										<td class=""><span class="value2">{{transaction.as_json.rct_signatures.txnFee | piconero}} MSR</span></td>
+									</tr>
+									<tr v-if="sumOutputs > 0">
+										<td class="">Sum outputs</td>
+										<td class=""><span class="value2">{{sumOutputs | piconero}} MSR</span></td>
+									</tr>
+									<tr>
+										<td class="">Extra</td>
+										<td class=""><span class="value2">{{extraAsHex}}</span></td>
+									</tr>
+									<tr v-if="paymentId != ''">
+										<td class="">Payment ID</td>
+										<td class=""><span class="value2">{{paymentId}}</span></td>
+									</tr>
+									<tr v-if="encryptedPaymentId != ''" >
+										<td class="">Encrypted Payment ID</td>
+										<td class=""><span class="value2">{{encryptedPaymentId}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Mixin</td>
+										<td class=""><span class="value2">{{mixinCount}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Type</td>
+										<td class="">
+											<span class="value2" v-if="transaction.as_json.rct_signatures.type === 0">No RingCT</span>
+											<span class="value2" v-if="transaction.as_json.rct_signatures.type === 1">Full RingCT</span>
+											<span class="value2" v-if="transaction.as_json.rct_signatures.type === 2">Simple RingCT</span>
+											<span class="value2" v-if="transaction.as_json.rct_signatures.type === 3">Full Bulletproof</span>
+											<span class="value2" v-if="transaction.as_json.rct_signatures.type === 4">Simple Bulletproof</span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel">
+					<div class="title"><i class="fa fa-cube fa-fw" aria-hidden="true"></i>In block</div>
+					<div class="content padding10">
+						<div class="tableOverflow bigOverflow">
+
+							<table>
+								<thead>
+									<tr>
+										<td>Hash</td>
+										<td>Height</td>
+										<td>Date</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-if="!transaction.in_pool" v-for="block of blocks">
+										<td><a :href="'block.html?hash='+block.hash">{{block.hash}}</a></td>
+										<td><a :href="'block.html?height='+block.height">{{block.height}}</a></td>
+										<td>{{block.timestamp | date}}</td>
+									</tr>
+									<tr v-if="transaction.in_pool">
+										<td colspan="3" class="tac" >
+											In mempool : Waiting to be included in a block
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel" id="inputs">
+					<div class="title"><i class="fa fa-long-arrow-left fa-fw" aria-hidden="true"></i>Inputs ({{vinLength}})</div>
+					<div class="content padding10">
+						<div class="tableOverflow bigOverflow">
+							<table>
+								<thead>
+									<tr>
+										<td>Amount</td>
+										<td>Image</td>
+										<td>Offsets</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="input of transaction.as_json.vin" v-if="input.key">
+										<td>{{input.key.amount | piconero}} MSR</td>
+										<td>{{input.key.k_image}}</td>
+										<td>{{input.key.key_offsets | offsets}}</td>
+									</tr>
+									<tr v-if="vinLength === 0">
+										<td colspan="3" class="tac">None</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel" id="outputs">
+					<div class="title"><i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i>Outputs
+						<span v-if="decodedOuts.length == 0" >({{transaction.as_json.vout.length}})</span>
+						<span v-if="decodedOuts.length != 0" >({{decodedOuts.length}})</span>
+					</div>
+					<div class="content padding10">
+						<div class="tableOverflow bigOverflow">
+							<table>
+								<thead>
+									<tr>
+										<td>Amount</td>
+										<td>Image</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-if="decodedOuts.length == 0" v-for="output of transaction.as_json.vout">
+										<td>{{output.amount | piconero}} MSR</td>
+										<td>{{output.target.key}}</td>
+									</tr>
+									<tr v-if="decodedOuts.length != 0" v-for="output of decodedOuts" >
+										<td>{{output.amount | piconero}} MSR</td>
+										<td>{{output.pubKey}}</td>
+									</tr>
+									<tr v-if="transaction.as_json.vout.length === 0">
+										<td colspan="2" class="tac">None</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel" >
+					<div class="title" >Check you received something</div>
+					<div class="content padding10" >
+						<div class="field" >
+							<label>Public address</label>
+							<input type="text" v-model="publicAddress" placeholder="5x...." >
+						</div>
+						<div class="field" >
+							<label>Private view key</label>
+							<input type="text" v-model="privateViewKey" placeholder="64 characters" >
+						</div>
+						<div class="tac" >
+							<button @click="proveOwnership()" class="btn">Verify</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel" >
+					<div class="title" >Prove sending</div>
+					<div class="subtitle" >"Transaction private key" can be obtained using the "get_tx_key" command in masari-wallet-cli command line tool or in the transaction details on the webwallet</div>
+					<div class="content padding10" >
+						<div class="field" >
+							<label>Recipient's address/subaddress</label>
+							<input type="text" v-model="publicAddress" placeholder="5x...." >
+						</div>
+						<div class="field" >
+							<label>Transaction private key</label>
+							<input type="text" v-model="transactionPrivateKey" placeholder="64 characters" >
+						</div>
+						<div class="tac" >
+							<button @click="proveSending()" class="btn">Verify</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<div v-else="">
+				Loading ...
+			</div>
 		</div>
-	</div>
-
-
-	<div class="pageContainer">
-
-		<div v-if="transaction !== null">
-			<div class="panel">
-				<div class="title"><i class="fa fa-exchange fa-fw" aria-hidden="true"></i> Transaction</div>
-				<div class="content padding10">
-					<div class="" v-if="transaction.in_pool" >In mempool</div>
-					<div class="">Hash: <span class="value2">{{transaction.tx_hash}}</span></div>
-					<div class="">Public key: <span class="value2">{{txPubKey}}</span></div>
-					<div v-if="transaction.as_json.rct_signatures.fee" class="">Fee: <span class="value2">{{transaction.as_json.rct_signatures.txnFee | piconero}} MSR</span></div>
-					<div v-if="sumOutputs > 0" class="">Sum outputs: <span class="value2">{{sumOutputs | piconero}} MSR</span></div>
-					<div class="">Extra: <span class="value2">{{extraAsHex}}</span></div>
-					<div v-if="paymentId != ''" class="">Payment ID: <span class="value2">{{paymentId}}</span></div>
-					<div v-if="encryptedPaymentId != ''" class="">Encrypted Payment ID: <span class="value2">{{encryptedPaymentId}}</span></div>
-					<div class="">Mixin: <span class="value2">{{mixinCount}}</span></div>
-					<div class="">Type:
-						<span class="value2" v-if="transaction.as_json.rct_signatures.type === 0">No RingCT</span>
-						<span class="value2" v-if="transaction.as_json.rct_signatures.type === 1">Full RingCT</span>
-						<span class="value2" v-if="transaction.as_json.rct_signatures.type === 2">Simple RingCT</span>
-						<span class="value2" v-if="transaction.as_json.rct_signatures.type === 3">Full Bulletproof</span>
-						<span class="value2" v-if="transaction.as_json.rct_signatures.type === 4">Simple Bulletproof</span>
-					</div>
-				</div>
-			</div>
-
-			<div class="panel">
-				<div class="title"><i class="fa fa-cube fa-fw" aria-hidden="true"></i>In block</div>
-				<div class="content padding10">
-					<table>
-						<thead>
-						<tr>
-							<td>Hash</td>
-							<td>Height</td>
-							<td>Date</td>
-						</tr>
-						</thead>
-						<tbody>
-						<tr v-if="!transaction.in_pool" v-for="block of blocks">
-							<td><a :href="'block.html?hash='+block.hash">{{block.hash}}</a></td>
-							<td><a :href="'block.html?height='+block.height">{{block.height}}</a></td>
-							<td>{{block.timestamp | date}}</td>
-						</tr>
-						<tr v-if="transaction.in_pool">
-							<td colspan="3" class="tac" >
-								In mempool : Waiting to be included in a block
-							</td>
-						</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-			<div class="panel" id="inputs">
-				<div class="title"><i class="fa fa-long-arrow-left fa-fw" aria-hidden="true"></i>Inputs ({{vinLength}})</div>
-				<div class="content padding10">
-					<table>
-						<thead>
-						<tr>
-							<td>Amount</td>
-							<td>Image</td>
-							<td>Offsets</td>
-						</tr>
-						</thead>
-						<tbody>
-						<tr v-for="input of transaction.as_json.vin" v-if="input.key">
-							<td>{{input.key.amount | piconero}} MSR</td>
-							<td>{{input.key.k_image}}</td>
-							<td>{{input.key.key_offsets | offsets}}</td>
-						</tr>
-						<tr v-if="vinLength === 0">
-							<td colspan="3" class="tac">None</td>
-						</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-			<div class="panel" id="outputs">
-				<div class="title"><i class="fa fa-long-arrow-right fa-fw" aria-hidden="true"></i>Outputs
-					<span v-if="decodedOuts.length == 0" >({{transaction.as_json.vout.length}})</span>
-					<span v-if="decodedOuts.length != 0" >({{decodedOuts.length}})</span>
-				</div>
-				<div class="content padding10">
-					<table>
-						<thead>
-						<tr>
-							<td>Amount</td>
-							<td>Image</td>
-						</tr>
-						</thead>
-						<tbody>
-						<tr v-if="decodedOuts.length == 0" v-for="output of transaction.as_json.vout">
-							<td>{{output.amount | piconero}} MSR</td>
-							<td>{{output.target.key}}</td>
-						</tr>
-						<tr v-if="decodedOuts.length != 0" v-for="output of decodedOuts" >
-							<td>{{output.amount | piconero}} MSR</td>
-							<td>{{output.pubKey}}</td>
-						</tr>
-						<tr v-if="transaction.as_json.vout.length === 0">
-							<td colspan="2" class="tac">None</td>
-						</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-			<div class="panel" >
-				<div class="title" >Check you received something</div>
-				<div class="content padding10" >
-					<div class="field" >
-						<label>Public address</label>
-						<input type="text" v-model="publicAddress" placeholder="5x...." >
-					</div>
-					<div class="field" >
-						<label>Private view key</label>
-						<input type="text" v-model="privateViewKey" placeholder="64 characters" >
-					</div>
-					<div class="tac" >
-						<button @click="proveOwnership()" class="btn">Verify</button>
-					</div>
-				</div>
-			</div>
-
-			<div class="panel" >
-				<div class="title" >Prove sending</div>
-				<div class="subtitle" >"Transaction private key" can be obtained using the "get_tx_key" command in masari-wallet-cli command line tool or in the transaction details on the webwallet</div>
-				<div class="content padding10" >
-					<div class="field" >
-						<label>Recipient's address/subaddress</label>
-						<input type="text" v-model="publicAddress" placeholder="5x...." >
-					</div>
-					<div class="field" >
-						<label>Transaction private key</label>
-						<input type="text" v-model="transactionPrivateKey" placeholder="64 characters" >
-					</div>
-					<div class="tac" >
-						<button @click="proveSending()" class="btn">Verify</button>
-					</div>
-				</div>
-			</div>
-
-		</div>
-		<div v-else="">
-			Loading ...
-		</div>
-	</div>
 
 	<div class="pageContainer footer padding10">
 		<div class="copyright">© 2018-2020 <a href="https://getmasari.org">The Masari Project</a></div>
@@ -188,23 +231,22 @@
 					<li>White peers: {{networkInfo.white_peerlist_size}}</li>
 					<li>Grey peers: {{networkInfo.grey_peerlist_size}}</li>
 				</ul>
+				</div>
 			</div>
 		</div>
 	</div>
-fo
-</div>
 
 
-<script src="lib/vuejs/vue.js"></script>
-<script src="lib/cn/biginteger.js"></script>
-<script src="lib/cn/base58.js"></script>
-<script src="lib/cn/sha3.js"></script>
-<script src="lib/cn/crypto.js"></script>
-<script src="lib/cn/nacl-fast.js"></script>
-<script src="config.js"></script>
-<script src="lib/cn/cn_utils.js"></script>
-<script src="lib/jquery/jquery-3.3.1.min.js"></script>
-<script src="lib/requirejs/require.js" data-main="transaction.js"></script>
+	<script src="lib/vuejs/vue.js"></script>
+	<script src="lib/cn/biginteger.js"></script>
+	<script src="lib/cn/base58.js"></script>
+	<script src="lib/cn/sha3.js"></script>
+	<script src="lib/cn/crypto.js"></script>
+	<script src="lib/cn/nacl-fast.js"></script>
+	<script src="config.js"></script>
+	<script src="lib/cn/cn_utils.js"></script>
+	<script src="lib/jquery/jquery-3.3.1.min.js"></script>
+	<script src="lib/requirejs/require.js" data-main="transaction.js"></script>
 
 </body>
 </html>

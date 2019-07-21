@@ -20,4 +20,5 @@ global.config = {
 	coinUriPrefix: 'masari:',
 	avgBlockTime: 60,
 	maxBlockNumber: 500000000,
+	coinSupply: 18500000
 };

@@ -10,124 +10,124 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 </head>
 <body>
-<div id="app" v-cloak="">
-	<div class="header panel">
-		<div class="pageContainer">
-			<div class="logo">
-				<a href="index.html">
-					<img src="imgs/logo_white.png"/> Explorer
-				</a>
-			</div>
-			<div class="search">
-				<search></search>
+	<div id="app" v-cloak="">
+		<div class="header panel">
+			<div class="pageContainer">
+				<div class="logo">
+					<a href="index.html">
+						<img src="imgs/logo_white.png"/> Explorer
+					</a>
+				</div>
+				<div class="search">
+					<search></search>
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="pageContainer">
-		<div class="panel">
-			<div class="title"><i class="fa fa-tasks fa-fw" aria-hidden="true"></i> Stats</div>
-			<div class="content padding10">
-				<div class="column3">
-					<div class="column group">
-						<div class="item">Height <span class="value">{{networkStats.height}}</span></div>
-						<div class="item">Transactions <span class="value">{{networkInfo.tx_count}}</span></div>
-						<div class="item">Difficulty <span class="value">{{networkStats.difficulty | difficulty}}</span></div>
-					</div>
-					<div class="column group">
-						<div class="item">Hashrate <span class="value">{{currentHashrate | hashrate}}</span></div>
-						<div class="item">Hard fork <span class="value">v{{networkStats.major_version}}</span></div>
-						<div class="item">Server time<span class="value">{{serverTime | date}}</span></div>
-					</div>
-					<!--<div class="column group">
+		<div class="pageContainer">
+			<div class="panel">
+				<div class="title"><i class="fa fa-tasks fa-fw" aria-hidden="true"></i> Network Stats</div>
+				<div class="content padding10">
+					<div class="column4">
+						<div class="column group">
+							<div class="item">Height <span class="value">{{networkStats.height}}</span></div>
+							<div class="item">Transactions <span class="value">{{networkInfo.tx_count}}</span></div>
+							<div class="item">Difficulty <span class="value">{{networkStats.difficulty | difficulty}}</span></div>
+						</div>
+						<div class="column group">
+							<div class="item">Hashrate <span class="value">{{currentHashrate | hashrate}}</span></div>
+							<div class="item">Hard fork <span class="value">v{{networkStats.major_version}}</span></div>
+							<div class="item">Server time<span class="value">{{serverTime | date}}</span></div>
+						</div>
+						<!--<div class="column group">
 						<div class="item">supply: <span class="value"></span></div>
 						<div class="item">emission: <span class="value"></span></div>
 						<div class="item">emission % : <span class="value"></span></div>
-					</div>-->
-					<div class="column group">
-						<div class="item">Last block time: <span class="value">{{networkStats.timestamp | date}}</span></div>
-						<div class="item">Last block reward: <span class="value">{{networkStats.reward | piconero}} MSR</span></div>
-						<div class="item">Avg Solve Time (Target): <span class="value">{{avgSolveTime}} ({{networkInfo.target}})s</span></div>
+						</div>-->
+						<div class="column group">
+							<div class="item">Last block time: <span class="value">{{networkStats.timestamp | date}}</span></div>
+							<div class="item">Last block reward: <span class="value">{{networkStats.reward | piconero}} MSR</span></div>
+							<div class="item">Avg Solve Time (Target): <span class="value">{{avgSolveTime}} ({{networkInfo.target}})s</span></div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="panel">
-			<div class="title"><i class="fa fa-exchange fa-fw" aria-hidden="true"></i> Transaction pool</div>
-			<div class="content padding10" :class="(txsInMempool.length === 0 ? '' : 'tableOverflow')">
-				<table>
-					<thead>
-					<tr>
-						<td class="">Date & Time</td>
-						<td class="">Hash</td>
-						<td class="tar">Fee</td>
-					</tr>
-					</thead>
-					<tbody>
-					<tr v-for="tx in txsInMempool">
-						<td class="">{{tx.receive_time | date}}</td>
-						<td class=""><a :href="'transaction.html?hash='+tx.id_hash">{{tx.id_hash}}</a></td>
-						<td class="tar">{{tx.fee | piconero}} MSR</td>
-					</tr>
-					<tr v-if="txsInMempool.length === 0">
-						<td colspan="3" class="tac">
-							Empty
-						</td>
-					</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-
-		<div class="panel">
-			<div class="title"><i class="fa fa-area-chart" aria-hidden="true"></i> Network hashrate</div>
-			<div class="content padding10" :class="(txsInMempool.length === 0 ? '' : 'tableOverflow')">
-				<canvas id="hashrateChart" height="300"></canvas>
-			</div>
-		</div>
-
-		<div class="panel">
-			<div class="title"><i class="fa fa-chain fa-fw" aria-hidden="true"></i> Recent blocks ({{blockHeaders.length}})</div>
-			<div class="content padding10">
-				<div class="tableOverflow bigOverflow">
+			<div class="panel">
+				<div class="title"><i class="fa fa-exchange fa-fw" aria-hidden="true"></i> Transaction pool</div>
+				<div class="content padding10" :class="(txsInMempool.length === 0 ? '' : 'tableOverflow')">
 					<table>
 						<thead>
-						<tr>
-							<td class="">Height</td>
-							<td class="">Date & time</td>
-							<td class="">Size</td>
-							<td class="">Block hash</td>
-							<td class="">Reward</td>
-							<td class="">Difficulty</td>
-							<td class="">Txs</td>
-						</tr>
+							<tr>
+								<td class="">Date & Time</td>
+								<td class="">Hash</td>
+								<td class="tar">Fee</td>
+							</tr>
 						</thead>
 						<tbody>
-						<tr v-for="header in blockHeaders">
-							<td class=""><a :href="'block.html?height='+header.height">{{header.height}}</a></td>
-							<td class="">{{header.timestamp | date}}</td>
-							<td class="tar">{{header.block_size | bytes}}</td>
-							<td class=""><a :href="'block.html?hash='+header.hash">{{header.hash}}</a></td>
-							<td class="tar">{{header.reward | piconero}} MSR</td>
-							<td class="tar">{{header.difficulty | difficulty}}</td>
-							<td class="tar">{{header.num_txes}}</td>
-						</tr>
+							<tr v-for="tx in txsInMempool">
+								<td class="">{{tx.receive_time | date}}</td>
+								<td class=""><a :href="'transaction.html?hash='+tx.id_hash">{{tx.id_hash}}</a></td>
+								<td class="tar">{{tx.fee | piconero}} MSR</td>
+							</tr>
+							<tr v-if="txsInMempool.length === 0">
+								<td colspan="3" class="tac">
+									Empty
+								</td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
-				<div class="tac">
-					<div>
-						<button @click="loadMoreBlocks()" class="btn" :disabled="loadingBlocks">Load more</button>
+			</div>
+
+			<div class="panel">
+				<div class="title"><i class="fa fa-area-chart" aria-hidden="true"></i> Network hashrate</div>
+				<div class="content padding10" :class="(txsInMempool.length === 0 ? '' : 'tableOverflow')">
+					<canvas id="hashrateChart" height="300"></canvas>
+				</div>
+			</div>
+
+			<div class="panel">
+				<div class="title"><i class="fa fa-chain fa-fw" aria-hidden="true"></i> Recent blocks ({{blockHeaders.length}})</div>
+				<div class="content padding10">
+					<div class="tableOverflow bigOverflow">
+						<table>
+							<thead>
+								<tr>
+									<td class="">Height</td>
+									<td class="">Date & time</td>
+									<td class="">Size</td>
+									<td class="">Block hash</td>
+									<td class="">Reward</td>
+									<td class="">Difficulty</td>
+									<td class="">Txs</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="header in blockHeaders">
+									<td class=""><a :href="'block.html?height='+header.height">{{header.height}}</a></td>
+									<td class="">{{header.timestamp | date}}</td>
+									<td class="tar">{{header.block_size | bytes}}</td>
+									<td class=""><a :href="'block.html?hash='+header.hash">{{header.hash}}</a></td>
+									<td class="tar">{{header.reward | piconero}} MSR</td>
+									<td class="tar">{{header.difficulty | difficulty}}</td>
+									<td class="tar">{{header.num_txes}}</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
-					<div>
-						<button @click="loadOlderBlocks()" class="btn" :disabled="!canLoadOlder">Older</button>
-						<button @click="loadNewerBlocks()" class="btn" :disabled="!canLoadNewer">Newer</button>
+					<div class="tac">
+						<div>
+							<button @click="loadMoreBlocks()" class="btn" :disabled="loadingBlocks">Load more</button>
+						</div>
+						<div>
+							<button @click="loadOlderBlocks()" class="btn" :disabled="!canLoadOlder">Older</button>
+							<button @click="loadNewerBlocks()" class="btn" :disabled="!canLoadNewer">Newer</button>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
 	<div class="pageContainer footer padding10">
 		<div class="copyright">© 2018-2020 <a href="https://getmasari.org">The Masari Project</a></div>
@@ -145,16 +145,16 @@
 					<li>White peers: {{networkInfo.white_peerlist_size}}</li>
 					<li>Grey peers: {{networkInfo.grey_peerlist_size}}</li>
 				</ul>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<script src="lib/chartjs/chart.bundle.min.js"></script>
-<script src="lib/vuejs/vue.js"></script>
-<script src="lib/jquery/jquery-3.3.1.min.js"></script>
-<script src="config.js"></script>
-<script src="lib/requirejs/require.js" data-main="index.js"></script>
+	<script src="lib/chartjs/chart.bundle.min.js"></script>
+	<script src="lib/vuejs/vue.js"></script>
+	<script src="lib/jquery/jquery-3.3.1.min.js"></script>
+	<script src="config.js"></script>
+	<script src="lib/requirejs/require.js" data-main="index.js"></script>
 
 </body>
 </html>

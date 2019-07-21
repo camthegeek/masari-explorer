@@ -302,7 +302,7 @@ table tr:last-child{
 	border:none;
 }
 table > tbody > tr:hover{
-	background-color: rgba(255,255,255,0.3);
+	background-color: #3d4952;
 }
 table td{
 	padding:5px;
@@ -499,4 +499,13 @@ table td{
 }
 .field.checkbox input:checked~label:after{
 	left: 2.15rem;
+}
+tr:nth-child(even) { 
+	background: #292e32;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+.panel > .title{
+font-size:24px !important;
+}
 }

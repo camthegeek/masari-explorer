@@ -10,88 +10,164 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 </head>
 <body>
-<div id="app" v-cloak="">
-	<div class="header panel">
-		<div class="logo">
-			<a href="index.html">
-				<img src="imgs/logo_white.png"/> Explorer
-			</a>
+	<div id="app" v-cloak="">
+		<div class="header panel">
+			<div class="pageContainer">
+				<div class="logo">
+					<a href="index.html">
+						<img src="imgs/logo_white.png"/> Explorer
+					</a>
+				</div>
+				<div class="search">
+					<search></search>
+				</div>
+			</div>
 		</div>
-		<div class="search">
-			<search></search>
-		</div>
-	</div>
 
 
-	<div class="pageContainer">
-		<div v-if="uncle" >
-			<div class="panel">
-				<div class="title"><i class="fa fa-cube fa-fw" aria-hidden="true"></i> Uncle Block</div>
-				<div class="content padding10">
-					<div class="">Hash: <span class="value2"><a :href="'block.html?hash='+uncle.hash">{{uncle.hash}}</a></span></div>
-					<div class="">Height: <span class="value2">{{uncle.json.miner_tx.vin[0].gen.height}}</span></div>
-					<div class="">Date: <span class="value2">{{uncle.json.timestamp | date}}</span></div>
-					<div class="">
-						Reward:
-						<span v-if="uncleReward === null">Unknown</span>
-						<span v-else="">{{uncleReward | piconero}}</span>
+		<div class="pageContainer">
+			<div v-if="uncle" >
+				<div class="panel">
+					<div class="title"><i class="fa fa-cube fa-fw" aria-hidden="true"></i> Uncle Block</div>
+					<div class="content padding10">
+						<div class="tableOverflow bigOverflow">
+							<table>
+								<tbody>
+									<tr>
+										<td class="">Hash</td>
+										<td class=""><span class="value2"><a :href="'block.html?hash='+uncle.hash">{{uncle.hash}}</a></span></td>
+									</tr>
+									<tr>
+										<td class="">Height</td>
+										<td class=""><span class="value2">{{uncle.json.miner_tx.vin[0].gen.height}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Date</td>
+										<td class=""><span class="value2">{{uncle.json.timestamp | date}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Reward</td>
+										<td class="">
+											<span v-if="uncleReward === null">Unknown</span>
+											<span v-else="">{{uncleReward | piconero}}</span>
+										</td>
+									</tr>
+									<tr>
+										<td class="">Major version</td>
+										<td class=""><span class="value2">{{uncle.json.major_version}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Minor version</td>
+										<td class=""><span class="value2">{{uncle.json.minor_version}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Nonce</td>
+										<td class=""><span class="value2">{{uncle.json.nonce}}</span></td>
+									</tr>
+									<tr v-if="uncle.json.uncle && uncle.json.uncle !== '0000000000000000000000000000000000000000000000000000000000000000'">
+										<td class="">Uncle hash:</td>
+										<td class=""><span class="value2"><a :href="'block.html?hash='+uncle.json.uncle">{{uncle.json.uncle}}</a></span></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
-					<div class="">Major version: <span class="value2">{{uncle.json.major_version}}</span></div>
-					<div class="">Minor version: <span class="value2">{{uncle.json.minor_version}}</span></div>
-					<div class="">Nonce: <span class="value2">{{uncle.json.nonce}}</span></div>
-					<div class="" v-if="uncle.json.uncle && uncle.json.uncle !== '0000000000000000000000000000000000000000000000000000000000000000'">Uncle hash: <span class="value2"><a :href="'block.html?hash='+uncle.json.uncle">{{uncle.json.uncle}}</a></span></div>
 				</div>
 			</div>
-		</div>
-		<div v-if="block !== null">
-			<div class="panel">
-				<div class="title" v-if="uncle"><i class="fa fa-cube fa-fw" aria-hidden="true"></i> Included in Block</div>
-				<div class="title" v-else=""><i class="fa fa-cube fa-fw" aria-hidden="true"></i> Block</div>
-				<div class="content padding10">
-					<div class="">Hash: <span class="value2"><a :href="'block.html?hash='+block.block_header.hash">{{block.block_header.hash}}</a></span></div>
-					<div class="">Height: <span class="value2">{{block.block_header.height}}</span></div>
-					<div class="">Date: <span class="value2">{{block.block_header.timestamp | date}}</span></div>
-					<div class="">Difficulty: <span class="value2">{{block.block_header.difficulty}}</span></div>
-					<div class="">Depth: <span class="value2">{{block.block_header.depth}}</span></div>
-					<div class="">Reward: <span class="value2">{{block.block_header.reward | piconero}}</span></div>
-					<div class="">Block size: <span class="value2">{{block.block_header.block_size | bytes}}</span></div>
-					<div class="">Major version: <span class="value2">{{block.block_header.major_version}}</span></div>
-					<div class="">Minor version: <span class="value2">{{block.block_header.minor_version}}</span></div>
-					<div class="">Nonce: <span class="value2">{{block.block_header.nonce}}</span></div>
-					<div class="" v-if="block.block_header.weight">Weight: <span class="value2">{{block.block_header.weight}}</span></div>
-					<div class="" v-if="block.json.uncle && block.json.uncle !== '0000000000000000000000000000000000000000000000000000000000000000'">Uncle hash: <span class="value2"><a :href="'block.html?hash='+block.json.uncle">{{block.json.uncle}}</a></span></div>
-					<div class="">Orphaned:
-						<span class="value2" v-if="block.block_header.orphan_status">Yes</span>
-						<span class="value2" v-else="">No</span>
+			<div v-if="block !== null">
+				<div class="panel">
+					<div class="title" v-if="uncle"><i class="fa fa-cube fa-fw" aria-hidden="true"></i> Included in Block</div>
+					<div class="title" v-else=""><i class="fa fa-cube fa-fw" aria-hidden="true"></i> Block #{{block.block_header.height}} Details</div>
+					<div class="content padding10">
+						<div class="tableOverflow bigOverflow">
+							<table>
+								<tbody>
+									<tr>
+										<td class="">Hash</td>
+										<td class=""><span class="value2"><a :href="'block.html?hash='+block.block_header.hash">{{block.block_header.hash}}</a></span></td>
+									</tr>
+									<tr>
+										<td class="">Height</td>
+										<td class=""><span class="value2">{{block.block_header.height}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Date</td>
+										<td class=""><span class="value2">{{block.block_header.timestamp | date}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Difficulty</td>
+										<td class=""><span class="value2">{{block.block_header.difficulty}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Depth</td>
+										<td class=""><span class="value2">{{block.block_header.depth}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Reward</td>
+										<td class=""><span class="value2">{{block.block_header.reward | piconero}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Block size</td>
+										<td class=""><span class="value2">{{block.block_header.block_size | bytes}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Major version</td>
+										<td class=""><span class="value2">{{block.block_header.major_version}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Minor version</td>
+										<td class=""><span class="value2">{{block.block_header.minor_version}}</span></td>
+									</tr>
+									<tr>
+										<td class="">Nonce</td>
+										<td class=""><span class="value2">{{block.block_header.nonce}}</span></td>
+									</tr>
+									<tr v-if="block.block_header.weight">
+										<td class="">Weight</td>
+										<td class=""><span class="value2">{{block.block_header.weight}}</span></td>
+									</tr>
+									<tr v-if="block.json.uncle && block.json.uncle !== '0000000000000000000000000000000000000000000000000000000000000000'">
+										<td class="">Uncle hash</td>
+										<td class=""><span class="value2"><a :href="'block.html?hash='+block.json.uncle">{{block.json.uncle}}</a></span></td>
+									</tr>
+									<tr>
+										<td class="">Orphaned</td>
+										<td class="">
+											<span class="value2" v-if="block.block_header.orphan_status">Yes</span>
+											<span class="value2" v-else="">No</span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel">
+					<div class="title"><i class="fa fa-exchange fa-fw" aria-hidden="true"></i> Transactions ({{block.json.tx_hashes.length+1}})</div>
+					<div class="content padding10">
+						<table>
+							<thead>
+								<tr>
+									<td>Hash</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><a :href="'transaction.html?hash='+block.miner_tx_hash">{{block.miner_tx_hash}} (miner reward)</a></td>
+								</tr>
+								<tr v-for="hash in block.json.tx_hashes">
+									<td><a :href="'transaction.html?hash='+hash">{{hash}}</a></td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
-
-			<div class="panel">
-				<div class="title"><i class="fa fa-exchange fa-fw" aria-hidden="true"></i> Transactions ({{block.json.tx_hashes.length+1}})</div>
-				<div class="content padding10">
-					<table>
-						<thead>
-						<tr>
-							<td>Hash</td>
-						</tr>
-						</thead>
-						<tbody>
-						<tr>
-							<td><a :href="'transaction.html?hash='+block.miner_tx_hash">{{block.miner_tx_hash}} (miner reward)</a></td>
-						</tr>
-						<tr v-for="hash in block.json.tx_hashes">
-							<td><a :href="'transaction.html?hash='+hash">{{hash}}</a></td>
-						</tr>
-						</tbody>
-					</table>
-				</div>
+			<div v-else="">
+				Loading ...
 			</div>
 		</div>
-		<div v-else="">
-			Loading ...
-		</div>
-	</div>
 
 	<div class="pageContainer footer padding10">
 		<div class="copyright">© 2018-2020 <a href="https://getmasari.org">The Masari Project</a></div>
@@ -109,14 +185,14 @@
 					<li>White peers: {{networkInfo.white_peerlist_size}}</li>
 					<li>Grey peers: {{networkInfo.grey_peerlist_size}}</li>
 				</ul>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<script src="lib/vuejs/vue.js"></script>
-<script src="lib/jquery/jquery-3.3.1.min.js"></script>
-<script src="lib/requirejs/require.js" data-main="block.js"></script>
+	<script src="lib/vuejs/vue.js"></script>
+	<script src="lib/jquery/jquery-3.3.1.min.js"></script>
+	<script src="lib/requirejs/require.js" data-main="block.js"></script>
 
 </body>
 </html>
