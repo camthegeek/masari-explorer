@@ -45,10 +45,10 @@
 										<td class="">Public key</td>
 										<td class=""><span class="value2">{{txPubKey}}</span></td>
 									</tr>
-									<tr v-if="transaction.as_json.rct_signatures.fee">
-										<td class="">Fee</td>
-										<td class=""><span class="value2">{{transaction.as_json.rct_signatures.txnFee | piconero}} MSR</span></td>
-									</tr>
+									<tr v-if="transaction.as_json.rct_signatures.txnFee">
+										<td class="">Fee (per kB)</td>
+										<td class=""><span class="value2">{{transaction.as_json.rct_signatures.txnFee | piconero}} MSR ({{ transaction.as_json.rct_signatures.txnFee / ((((transaction.as_hex).length)/2)/1024) | piconero }} MSR)  </span></td>
+									</tr>									
 									<tr v-if="sumOutputs > 0">
 										<td class="">Sum outputs</td>
 										<td class=""><span class="value2">{{sumOutputs | piconero}} MSR</span></td>
@@ -70,6 +70,11 @@
 										<td class=""><span class="value2">{{mixinCount}}</span></td>
 									</tr>
 									<tr>
+										<td class="">Transaction Size</td>
+										<td class=""><span class="value2">{{ (((transaction.as_hex).length)/2) | bytes }}</span></td>
+									</tr>
+
+									<tr>
 										<td class="">Type</td>
 										<td class="">
 											<span class="value2" v-if="transaction.as_json.rct_signatures.type === 0">No RingCT</span>
@@ -79,6 +84,11 @@
 											<span class="value2" v-if="transaction.as_json.rct_signatures.type === 4">Simple Bulletproof</span>
 										</td>
 									</tr>
+
+									<tr v-if="(networkInfo.height - transaction.block_height) > 0">
+										<td>Confirmed</td>
+										<td>{{ (networkInfo.height - transaction.block_height) }} blocks ago </td>
+									</tr> 
 								</tbody>
 							</table>
 						</div>
@@ -124,15 +134,19 @@
 									<tr>
 										<td>Amount</td>
 										<td>Image</td>
-										<td>Offsets</td>
 									</tr>
 								</thead>
 								<tbody>
 									<tr v-for="input of transaction.as_json.vin" v-if="input.key">
 										<td>{{input.key.amount | piconero}} MSR</td>
 										<td>{{input.key.k_image}}</td>
-										<td>{{input.key.key_offsets | offsets}}</td>
+										<table>
+											<tr v-for="member of txOutputs">
+												<td>{{ member }}</td>
+											</tr>
+										</table>
 									</tr>
+									
 									<tr v-if="vinLength === 0">
 										<td colspan="3" class="tac">None</td>
 									</tr>

@@ -17,6 +17,7 @@ if(
 	curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => 'http://' . $daemonAddress . ':' . $rpcPort . '/get_transactions', CURLOPT_POST => 1, CURLOPT_POSTFIELDS => $body));
 	
 	$resp = curl_exec($curl);
+	
 	$decodedJson = json_decode($resp, true);
 	if($decodedJson !== null){
 		foreach($decodedJson['txs'] as $key=>$tx){
@@ -24,7 +25,7 @@ if(
 			$decodedJson['txs'][$key]['as_json'] = $txAsJson;
 			unset($decodedJson['txs'][$key]['as_json']['rctsig_prunable']);
 			unset($decodedJson['txs'][$key]['rctsig_prunable']);
-			unset($decodedJson['txs'][$key]['as_hex']);
+			//unset($decodedJson['txs'][$key]['as_hex']); commented out to enable tx.size in bytes
 		}
 		echo json_encode($decodedJson['txs']);
 	}

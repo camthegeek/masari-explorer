@@ -125,6 +125,7 @@ export type Transaction = {
 	in_pool: boolean
 	output_indices: number[]
 	tx_hash:string
+	as_hex:string
 }
 
 export type DaemonVersion = {
@@ -150,6 +151,17 @@ export type MempoolTransaction = {
 
 export type EmissionInfo = {
 	emission: number
+}
+
+export type Members = {
+	kimage: string,
+	outs: { 
+		height: number,
+		key: string,
+		mask: string,
+		txid: string,
+		unlocked: boolean,
+		}
 }
 
 export type SearchResultType = 'blockHeight'|'blockHash'|'transactionHash'|null;
@@ -294,6 +306,18 @@ export class Daemon{
 			});
 		});
 	}
+	
+	public getTransactionOuts(indices : string, k_image: string) : Promise<Members[]>{
+		return new Promise<Members[]>((resolve, reject) => {
+			$.ajax({
+				url:this.apiUrl+'get_outs.php?indices='+indices+'&k_image='+k_image
+			}).done((data:any) => {
+				resolve(data);
+			}).catch(function(e : any){
+				reject(e);
+			});
+		});
+		}
 
 	getVersion() : Promise<DaemonVersion>{
 		return new Promise<DaemonVersion>((resolve, reject) => {

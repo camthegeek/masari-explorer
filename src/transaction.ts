@@ -1,4 +1,4 @@
-import {Block, BlockHeader, Daemon, DaemonInfo, NetworkStats, Transaction} from "./repositories/Daemon";
+import {Block, BlockHeader, Daemon, DaemonInfo, NetworkStats, Transaction, Members} from "./repositories/Daemon";
 import Utils from "./lib/horizon/Utils";
 import {Model} from "./model/TransactionDecoder";
 import {CryptoUtils} from "./model/CryptoUtils";
@@ -30,6 +30,7 @@ class IndexView extends Vue{
 
 	@VueVar([]) decodedOuts !: {amount:number, pubKey : string}[];
 	@VueVar(false) showProveReceived !: boolean;
+	@VueVar([]) membersX !: Members[];
 
 	@VueVar({
 		alt_blocks_count: 0,
@@ -84,7 +85,7 @@ class IndexView extends Vue{
 			this.networkInfo = stats;
 		});
 	}
-
+	
 	loadTransactionWithHash(hash : string){
 		this.daemon.getTransactionWithHash(hash).then((transaction : Transaction) => {
 			this.transaction = transaction;
@@ -94,7 +95,6 @@ class IndexView extends Vue{
 			});
 
 			let extras = Model.TransactionDecoder.parseExtra(this.transaction.as_json.extra);
-			console.log(extras);
 			for(let extra of extras){
 				if(extra.type === Model.TX_EXTRA_TAG_PUBKEY){
 					this.txPubKey = '';
@@ -108,14 +108,12 @@ class IndexView extends Vue{
 							this.paymentId += String.fromCharCode(extra.data[i]);
 						}
 						this.paymentId = CryptoUtils.bintohex(this.paymentId);
-						break;
 					} else if (extra.data[0] === Model.TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID) {
 						this.encryptedPaymentId = '';
 						for (let i = 1; i < extra.data.length; ++i) {
 							this.encryptedPaymentId += String.fromCharCode(extra.data[i]);
 						}
 						this.encryptedPaymentId = CryptoUtils.bintohex(this.encryptedPaymentId);
-						break;
 					}
 
 				}
@@ -125,10 +123,35 @@ class IndexView extends Vue{
 			for(let i = 0; i < this.transaction.as_json.extra.length; ++i)
 				this.extraAsHex += String.fromCharCode(this.transaction.as_json.extra[i]);
 			this.extraAsHex = CryptoUtils.bintohex(this.extraAsHex);
-
 		});
 	}
 
+	/*@VueComputed()
+	getTxOutputs() {
+		let returnVal = [];
+		if(this.transaction) {
+		try {
+			for(let keys of this.transaction.as_json.vin) {
+				let kimages = keys.key!.k_image;
+				let offsets = keys.key!.key_offsets;
+				let group = [];
+				let amountZ:number = 0;		
+				for (let i=0; i<offsets.length; i++) {
+					amountZ += offsets[i];
+					group.push(amountZ);
+				}
+				this.daemon.getTransactionOuts(group.toString(), kimages).then((members) => {
+					this.membersX = members;
+				});
+				returnVal.push(this.membersX);
+			}
+		} catch(e){
+		return '-';
+		}
+				return returnVal;
+}
+	}
+*/
 	@VueComputed()
 	getSumOutputs(){
 		let sum = 0;
